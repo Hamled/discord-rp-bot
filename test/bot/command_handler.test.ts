@@ -31,8 +31,8 @@ describe('Command handler', () => {
       handler.handle('test');
 
       mockCmds.forEach(cmd => {
-        expect(cmd.matches.mock.calls.length).toBe(0);
-        expect(cmd.process.mock.calls.length).toBe(0);
+        expect(cmd.matches).toHaveBeenCalledTimes(0);
+        expect(cmd.process).toHaveBeenCalledTimes(0);
       });
     });
 
@@ -42,8 +42,8 @@ describe('Command handler', () => {
       handler.handle('!test');
 
       mockCmds.forEach(cmd => {
-        expect(cmd.process.mock.calls.length).toBe(0);
-        expect(cmd.process.mock.calls.length).toBe(0);
+        expect(cmd.matches).toHaveBeenCalledTimes(1);
+        expect(cmd.process).toHaveBeenCalledTimes(0);
       });
     });
 
@@ -56,13 +56,16 @@ describe('Command handler', () => {
   });
 
   describe('processes command', () => {
+    const fooCmd = mockCmds[0];
+    const barCmd = mockCmds[1];
+
     it('processes only matching command', () => {
       const handler = new CommandHandler(mockCmds);
 
       handler.handle('!foo');
 
-      expect(mockCmds[0].process.mock.calls.length).toBe(1);
-      expect(mockCmds[1].process.mock.calls.length).toBe(0);
+      expect(fooCmd.process).toHaveBeenCalledTimes(1);
+      expect(barCmd.process).toHaveBeenCalledTimes(0);
     });
 
     it('sends empty argument list for no arguments', () => {
@@ -70,7 +73,7 @@ describe('Command handler', () => {
 
       handler.handle('!foo');
 
-      expect(mockCmds[0].process.mock.calls[0].length).toBe(0);
+      expect(fooCmd.process).toHaveBeenCalledWith();
     });
 
     it('sends argument list for one argument', () => {
@@ -78,8 +81,7 @@ describe('Command handler', () => {
 
       handler.handle('!foo one');
 
-      expect(mockCmds[0].process.mock.calls[0].length).toBe(1);
-      expect(mockCmds[0].process.mock.calls[0][0]).toBe('one');
+      expect(fooCmd.process).toHaveBeenCalledWith('one');
     });
 
     it('sends argument list for multiple arguments', () => {
@@ -87,8 +89,7 @@ describe('Command handler', () => {
 
       handler.handle('!foo one 2 three');
 
-      expect(mockCmds[0].process.mock.calls[0].length).toBe(3);
-      expect(mockCmds[0].process.mock.calls[0]).toEqual(['one', '2', 'three']);
+      expect(fooCmd.process).toHaveBeenCalledWith('one', '2', 'three');
     });
   });
 });
