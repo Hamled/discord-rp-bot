@@ -1,23 +1,27 @@
+import {Command} from '../../src/bot/command';
 import {CommandHandler} from '../../src/bot/command_handler';
 
-const makeMockCommand = (cmdName) => ({
+const MockCommandMatcher = jest.fn<jest.Mocked<Command>, [string]>((cmdName: string) => ({
   matches: jest.fn((name: string): boolean => name === cmdName),
   process: jest.fn((..._: string[]): void => {})
-});
+}));
 
-const alwaysMatch = {
+const MockCommandAlways = jest.fn<jest.Mocked<Command>, []>(() => ({
   matches: jest.fn((_: string): boolean => true),
   process: jest.fn((..._: string[]): void => {})
-};
+}));
+
+const mockCmds: jest.Mocked<Command>[] = [
+  new MockCommandMatcher('foo'),
+  new MockCommandMatcher('bar'),
+];
 
 describe('Command handler', () => {
-
-  let mockCmds;
   beforeEach(() => {
-    mockCmds = [
-      makeMockCommand('foo'),
-      makeMockCommand('bar')
-    ];
+    mockCmds.forEach((mock: jest.Mocked<Command>) => {
+      mock.matches.mockClear();
+      mock.process.mockClear();
+    });
   });
 
   describe('handles commands', () => {
@@ -44,7 +48,7 @@ describe('Command handler', () => {
     });
 
     it('throws an error if multiple commands match', () => {
-      const handler = new CommandHandler([...mockCmds, alwaysMatch]);
+      const handler = new CommandHandler([...mockCmds, new MockCommandAlways()]);
 
       expect(() => handler.handle('!foo')).toThrow(Error);
       expect(() => handler.handle('!bar')).toThrow(Error);
