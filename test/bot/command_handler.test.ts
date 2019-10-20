@@ -3,12 +3,12 @@ import {CommandHandler} from '../../src/bot/command_handler';
 
 const MockCommandMatcher = jest.fn<jest.Mocked<Command>, [string]>((cmdName: string) => ({
   matches: jest.fn((name: string): boolean => name === cmdName),
-  process: jest.fn((..._: string[]): void => {})
+  process: jest.fn((..._: string[]): Promise<void> => { return; })
 }));
 
 const MockCommandAlways = jest.fn<jest.Mocked<Command>, []>(() => ({
   matches: jest.fn((_: string): boolean => true),
-  process: jest.fn((..._: string[]): void => {})
+  process: jest.fn((..._: string[]): Promise<void> => { return; })
 }));
 
 const mockCmds: jest.Mocked<Command>[] = [
