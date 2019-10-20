@@ -3,8 +3,11 @@
     "target": "ES5",
     "module": "CommonJS",
     "outDir": "dist",
+    "lib": ["es6"],
     "sourceMap": false,
     "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
       "*": [
