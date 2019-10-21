@@ -74,6 +74,14 @@ describe('start command', () => {
       expect(session.channelId).toEqual(channelId);
     });
 
+    it('should return a context with the new session', async () => {
+      expect.assertions(1);
+      const newContext = await cmd.process(fakeContext());
+
+      const session = (Session as jest.Mock<Session>).mock.instances[0];
+      expect(newContext.session).toBe(session);
+    });
+
     it('should not create a new session if one already exists', async () => {
       expect.assertions(3);
       const context = fakeContext('12345', fakeSession);
