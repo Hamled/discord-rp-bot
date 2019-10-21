@@ -5,7 +5,7 @@ export class CommandHandler {
   constructor(private readonly commands: Command[]) {
   }
 
-  handle(msg: string, context: MsgContext): void {
+  async handle(msg: string, context: MsgContext): Promise<void> {
     const [cmdName, ...cmdArgs] = this.parseCmd(msg);
     if (!cmdName) return;
 
@@ -16,8 +16,8 @@ export class CommandHandler {
       throw new Error(`Multiple commands matched '${cmdName}: ${cmds}`);
     }
 
-    cmds.forEach(cmd => {
-      cmd.process(context, ...cmdArgs);
+    cmds.forEach(async cmd => {
+      await cmd.process(context, ...cmdArgs);
     });
   }
 
