@@ -11,6 +11,10 @@ export class StopCommand implements Command {
   }
 
   async process(context: MsgContext, ...args: string[]): Promise<MsgContext> {
-    return context;
+    if(!context.session) {
+      console.log(`Attempted to stop a session on channel ${context.channel.id} ` +
+                  `when no session was active.`);
+      return context;
+    }
   }
 }
