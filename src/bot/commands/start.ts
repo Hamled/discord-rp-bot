@@ -12,6 +12,12 @@ export class StartCommand implements Command {
   }
 
   async process(context: MsgContext, ...args: string[]): Promise<void> {
+    if(context.session) {
+      console.log(`Attempted to start a session on channel ${context.channel.id} ` + 
+                  `when one was already active (id ${context.session.id})`);
+      return;
+    }
+
     const sess = new Session();
     sess.channelId = context.channel.id;
     await this.manager.save(sess);

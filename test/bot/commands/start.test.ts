@@ -21,16 +21,22 @@ class FakeManager extends EntityManager {
   }
 }
 
-const fakeContext = (channelId?: string): MsgContext => ({
-  channel: new Channel(null, {id: channelId || ''})
+const fakeContext = (channelId?: string, session?: Session): MsgContext => ({
+  channel: new Channel(null, {id: channelId || ''}),
+  session
 });
 
 describe('start command', () => {
   let cmd: StartCommand;
   let manager: FakeManager;
+  let fakeSession: Session;
   beforeEach(() => {
     manager = new FakeManager();
     cmd = new StartCommand(manager);
+
+    fakeSession = new Session();
+    manager.save(fakeSession);
+
     (Session as jest.Mock<Session>).mockClear();
   });
 
@@ -64,6 +70,16 @@ describe('start command', () => {
 
       const session = (Session as jest.Mock<Session>).mock.instances[0];
       expect(session.channelId).toEqual(channelId);
+    });
+
+    it('should not create a new session if one already exists', () => {
+      const context = fakeContext('12345', fakeSession);
+      const numSavedEntities = manager.savedEntities.length;
+
+      cmd.process(context);
+
+      expect(Session).toHaveBeenCalledTimes(0);
+      expect(manager.savedEntities.length).toBe(numSavedEntities);
     });
   })
 });
