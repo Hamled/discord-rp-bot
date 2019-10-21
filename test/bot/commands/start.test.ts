@@ -53,33 +53,37 @@ describe('start command', () => {
   });
 
   describe('process', () => {
-    it('should save a new session', () => {
+    it('should save a new session', async () => {
+      expect.assertions(3);
       const numSavedEntities = manager.savedEntities.length;
 
-      cmd.process(fakeContext());
+      await cmd.process(fakeContext());
 
       expect(Session).toHaveBeenCalledTimes(1);
       expect(manager.savedEntities.length).toBe(numSavedEntities + 1);
       expect(manager.savedEntities[numSavedEntities]).toBeInstanceOf(Session);
     });
 
-    it('should set the new session\'s channel ID from the context', () => {
+    it('should set the new session\'s channel ID from the context', async () => {
+      expect.assertions(1);
       const channelId = '12345';
 
-      cmd.process(fakeContext(channelId));
+      await cmd.process(fakeContext(channelId));
 
       const session = (Session as jest.Mock<Session>).mock.instances[0];
       expect(session.channelId).toEqual(channelId);
     });
 
-    it('should not create a new session if one already exists', () => {
+    it('should not create a new session if one already exists', async () => {
+      expect.assertions(3);
       const context = fakeContext('12345', fakeSession);
       const numSavedEntities = manager.savedEntities.length;
 
-      cmd.process(context);
+      const newContext = await cmd.process(context);
 
       expect(Session).toHaveBeenCalledTimes(0);
       expect(manager.savedEntities.length).toBe(numSavedEntities);
+      expect(newContext.session).toBe(fakeSession);
     });
   })
 });
