@@ -48,11 +48,13 @@ describe('start command', () => {
 
   describe('process', () => {
     it('should save a new session', () => {
+      const numSavedEntities = manager.savedEntities.length;
+
       cmd.process(fakeContext());
 
       expect(Session).toHaveBeenCalledTimes(1);
-      expect(manager.savedEntities.length).toBe(1);
-      expect(manager.savedEntities[0]).toBeInstanceOf(Session);
+      expect(manager.savedEntities.length).toBe(numSavedEntities + 1);
+      expect(manager.savedEntities[numSavedEntities]).toBeInstanceOf(Session);
     });
 
     it('should set the new session\'s channel ID from the context', () => {
