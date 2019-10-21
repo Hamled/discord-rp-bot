@@ -1,6 +1,7 @@
 import {EntityManager} from 'typeorm';
 import {Session} from '../../../src/models/session';
 import {StartCommand} from '../../../src/bot/commands/start';
+import {MsgContext} from '../../../src/bot/msg_context';
 
 jest.mock('../../../src/models/session.ts');
 
@@ -18,6 +19,10 @@ class FakeManager extends EntityManager {
     return entity;
   }
 }
+
+const fakeContext = (): MsgContext => ({
+  channel: null
+});
 
 describe('start command', () => {
   let cmd: StartCommand;
@@ -41,7 +46,7 @@ describe('start command', () => {
 
   describe('process', () => {
     it('should save a new session', () => {
-      cmd.process();
+      cmd.process(fakeContext());
 
       expect(Session).toHaveBeenCalledTimes(1);
       expect(manager.savedEntities.length).toBe(1);

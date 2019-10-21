@@ -1,4 +1,6 @@
+import {MsgContext} from './msg_context';
+
 export interface Command {
   matches(name: string): boolean;
-  process(...args: string[]): Promise<void>;
+  process(context: MsgContext, ...args: string[]): Promise<void>;
 }

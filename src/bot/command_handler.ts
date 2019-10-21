@@ -1,10 +1,11 @@
 import {Command} from './command';
+import {MsgContext} from './msg_context';
 
 export class CommandHandler {
   constructor(private readonly commands: Command[]) {
   }
 
-  handle(msg: string): void {
+  handle(msg: string, context: MsgContext): void {
     const [cmdName, ...cmdArgs] = this.parseCmd(msg);
     if (!cmdName) return;
 
@@ -16,7 +17,7 @@ export class CommandHandler {
     }
 
     cmds.forEach(cmd => {
-      cmd.process(...cmdArgs);
+      cmd.process(context, ...cmdArgs);
     });
   }
 
