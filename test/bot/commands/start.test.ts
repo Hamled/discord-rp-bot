@@ -1,4 +1,5 @@
 import {EntityManager} from 'typeorm';
+import {Channel} from 'discord.js';
 import {Session} from '../../../src/models/session';
 import {StartCommand} from '../../../src/bot/commands/start';
 import {MsgContext} from '../../../src/bot/msg_context';
@@ -20,8 +21,8 @@ class FakeManager extends EntityManager {
   }
 }
 
-const fakeContext = (): MsgContext => ({
-  channel: null
+const fakeContext = (channelId?: string): MsgContext => ({
+  channel: new Channel(null, {id: channelId || ''})
 });
 
 describe('start command', () => {
@@ -30,6 +31,7 @@ describe('start command', () => {
   beforeEach(() => {
     manager = new FakeManager();
     cmd = new StartCommand(manager);
+    (Session as jest.Mock<Session>).mockClear();
   });
 
   describe('matches', () => {
@@ -51,6 +53,15 @@ describe('start command', () => {
       expect(Session).toHaveBeenCalledTimes(1);
       expect(manager.savedEntities.length).toBe(1);
       expect(manager.savedEntities[0]).toBeInstanceOf(Session);
+    });
+
+    it('should set the new session\'s channel ID from the context', () => {
+      const channelId = '12345';
+
+      cmd.process(fakeContext(channelId));
+
+      const session = (Session as jest.Mock<Session>).mock.instances[0];
+      expect(session.channelId).toEqual(channelId);
     });
   })
 });

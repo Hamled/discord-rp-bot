@@ -13,8 +13,9 @@ export class StartCommand implements Command {
 
   async process(context: MsgContext, ...args: string[]): Promise<void> {
     const sess = new Session();
+    sess.channelId = context.channel.id;
     await this.manager.save(sess);
 
-    console.log(`Starting new session with id ${sess.id}`);
+    console.log(`Starting new session with id ${sess.id} on channel ${sess.channelId}`);
   }
 }

@@ -5,6 +5,9 @@ export class Session {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column('varchar', {length: 24})
+  channelId: string;
+
   @CreateDateColumn()
   startDate: Date;
 
