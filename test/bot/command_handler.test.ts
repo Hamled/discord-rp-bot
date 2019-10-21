@@ -4,12 +4,17 @@ import {MsgContext} from '../../src/bot/msg_context';
 
 const MockCommandMatcher = jest.fn<jest.Mocked<Command>, [string]>((cmdName: string) => ({
   matches: jest.fn((name: string): boolean => name === cmdName),
-  process: jest.fn((_: MsgContext, ...__: string[]): Promise<void> => { return; })
+  process: jest.fn(async (ctx: MsgContext, ...__: string[]): Promise<MsgContext> => { return ctx; })
 }));
 
 const MockCommandAlways = jest.fn<jest.Mocked<Command>, []>(() => ({
   matches: jest.fn((_: string): boolean => true),
-  process: jest.fn((_: MsgContext, ...__: string[]): Promise<void> => { return; })
+  process: jest.fn(async (ctx: MsgContext, ...__: string[]): Promise<MsgContext> => { return ctx; })
+}));
+
+const MockCommandNewContext = jest.fn<jest.Mocked<Command>, [MsgContext]>((context: MsgContext) => ({
+  matches: jest.fn((_: string): boolean => true),
+  process: jest.fn(async (_: MsgContext, ...__: string[]): Promise<MsgContext> => context)
 }));
 
 const mockCmds: jest.Mocked<Command>[] = [
@@ -107,6 +112,31 @@ describe('Command handler', () => {
       await handler.handle('!foo one 2 three', context);
 
       expect(fooCmd.process).toHaveBeenCalledWith(context, 'one', '2', 'three');
+    });
+  });
+
+  describe('returns context', () => {
+    it('should return the same context if no command is processed', async () => {
+      expect.assertions(2);
+      const handler = new CommandHandler(mockCmds);
+
+      let newContext = await handler.handle('not-a-command', context);
+      expect(newContext).toBe(context);
+
+      newContext = await handler.handle('!unknown-command', context);
+      expect(newContext).toBe(context);
+    });
+
+    it('should may return a new context if a command is processed', async () => {
+      expect.assertions(2);
+      const ctx = { channel: null };
+      // Sanity check
+      expect(ctx).not.toBe(context);
+
+      const handler = new CommandHandler([...mockCmds, new MockCommandNewContext(ctx)]);
+
+      const newContext = await handler.handle('!anything', context);
+      expect(newContext).toBe(ctx);
     });
   });
 });
