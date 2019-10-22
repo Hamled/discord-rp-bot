@@ -1,4 +1,5 @@
-import {Entity, Column, PrimaryGeneratedColumn, CreateDateColumn} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany} from 'typeorm';
+import {Post} from './post';
 
 @Entity()
 export class Session {
@@ -13,4 +14,7 @@ export class Session {
 
   @Column('datetime', {nullable: true})
   endDate: Date;
+
+  @OneToMany(type => Post, post => post.session)
+  posts: Post[];
 }
