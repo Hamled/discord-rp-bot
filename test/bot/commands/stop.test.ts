@@ -64,6 +64,17 @@ describe('start command', () => {
       expect(fakeSession.endDate >= now).toBe(true);
     });
 
+    it('should save the inactive session', async () => {
+      expect.assertions(2);
+      const context = fakeContext('12345', fakeSession);
+      const numSavedEntities = manager.savedEntities.length;
+
+      await cmd.process(context);
+
+      expect(manager.savedEntities.length).toBe(numSavedEntities + 1);
+      expect(manager.savedEntities[numSavedEntities]).toBe(fakeSession);
+    })
+
     it('should not do anything if context has no session', async () => {
       expect.assertions(2);
       const context = fakeContext('12345');
