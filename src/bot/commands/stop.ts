@@ -21,5 +21,7 @@ export class StopCommand implements Command {
     // Set the end date for the current session
     session.endDate = new Date();
     this.manager.save(session);
+
+    return {channel: context.channel};
   }
 }

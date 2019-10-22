@@ -75,6 +75,15 @@ describe('start command', () => {
       expect(manager.savedEntities[numSavedEntities]).toBe(fakeSession);
     })
 
+    it('should return context without a session', async () => {
+      expect.assertions(1);
+      const context = fakeContext('12345', fakeSession);
+
+      const newContext = await cmd.process(context);
+
+      expect(newContext).toEqual({...context, session: undefined});
+    });
+
     it('should not do anything if context has no session', async () => {
       expect.assertions(2);
       const context = fakeContext('12345');
