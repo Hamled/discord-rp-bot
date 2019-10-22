@@ -53,6 +53,17 @@ describe('start command', () => {
   });
 
   describe('process', () => {
+    it('should end the active session', async () => {
+      expect.assertions(2);
+      const context = fakeContext('12345', fakeSession);
+      const now = new Date();
+
+      await cmd.process(context);
+
+      expect(fakeSession.endDate).toBeDefined();
+      expect(fakeSession.endDate >= now).toBe(true);
+    });
+
     it('should not do anything if context has no session', async () => {
       expect.assertions(2);
       const context = fakeContext('12345');

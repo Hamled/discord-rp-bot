@@ -11,10 +11,14 @@ export class StopCommand implements Command {
   }
 
   async process(context: MsgContext, ...args: string[]): Promise<MsgContext> {
-    if(!context.session) {
+    const session = context.session;
+    if(!session) {
       console.log(`Attempted to stop a session on channel ${context.channel.id} ` +
                   `when no session was active.`);
       return context;
     }
+
+    // Set the end date for the current session
+    session.endDate = new Date();
   }
 }
