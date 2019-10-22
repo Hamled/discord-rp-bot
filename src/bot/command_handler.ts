@@ -19,8 +19,8 @@ export class CommandHandler {
     return cmds.map(async cmd => await cmd.process(context, ...cmdArgs))[0] || context;
   }
 
-  private parseCmd(msg: string): string[] | null[] {
-    if (!msg.startsWith('!')) return [null];
+  private parseCmd(msg: string): string[] {
+    if (!msg.startsWith('!')) return [];
     return msg.substring(1).split(' ');
   }
 }

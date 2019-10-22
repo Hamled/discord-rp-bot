@@ -5,6 +5,7 @@
     "outDir": "dist",
     "lib": ["es6"],
     "sourceMap": false,
+    "strict": true,
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

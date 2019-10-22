@@ -1,5 +1,6 @@
 import {EntityManager} from 'typeorm';
 import {Command} from '../command';
+import {Session} from '../../models';
 import {MsgContext} from '../msg_context';
 
 export class StopCommand implements Command {
@@ -11,7 +12,7 @@ export class StopCommand implements Command {
   }
 
   async process(context: MsgContext, ...args: string[]): Promise<MsgContext> {
-    const session = context.session;
+    const session: Session | undefined = context.session;
     if(!session) {
       console.log(`Attempted to stop a session on channel ${context.channel.id} ` +
                   `when no session was active.`);

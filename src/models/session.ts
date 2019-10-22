@@ -3,18 +3,24 @@ import {Post} from './post';
 
 @Entity()
 export class Session {
+  constructor(channelId?: string) {
+    if(channelId != undefined) {
+      this.channelId = channelId;
+    }
+  }
+
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column('varchar', {length: 24})
-  channelId: string;
+  channelId!: string;
 
   @CreateDateColumn()
-  startDate: Date;
+  startDate!: Date;
 
   @Column('datetime', {nullable: true})
-  endDate: Date;
+  endDate?: Date;
 
   @OneToMany(type => Post, post => post.session)
-  posts: Post[];
+  posts!: Post[];
 }

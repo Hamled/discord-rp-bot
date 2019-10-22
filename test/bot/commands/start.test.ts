@@ -1,5 +1,5 @@
-import {EntityManager} from 'typeorm';
-import {Channel} from 'discord.js';
+import {EntityManager, Connection} from 'typeorm';
+import {Channel, Client} from 'discord.js';
 import {Session} from '../../../src/models';
 import {StartCommand} from '../../../src/bot/commands/start';
 import {MsgContext} from '../../../src/bot/msg_context';
@@ -10,7 +10,7 @@ class FakeManager extends EntityManager {
   public readonly savedEntities: any[] = [];
 
   constructor() {
-    super(null);
+    super((null as unknown) as Connection);
   }
 
   save(entity: any): Promise<any> {
@@ -22,7 +22,7 @@ class FakeManager extends EntityManager {
 }
 
 const fakeContext = (channelId?: string, session?: Session): MsgContext => ({
-  channel: new Channel(null, {id: channelId || ''}),
+  channel: new Channel((null as unknown) as Client, {id: channelId || ''}),
   session
 });
 
