@@ -1,6 +1,6 @@
 import {EntityManager} from 'typeorm';
 import {Channel} from 'discord.js';
-import {Session} from '../../../src/models/session';
+import {Session} from '../../../src/models';
 import {StopCommand} from '../../../src/bot/commands/stop';
 import {MsgContext} from '../../../src/bot/msg_context';
 

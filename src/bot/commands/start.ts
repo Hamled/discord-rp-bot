@@ -1,6 +1,6 @@
 import {EntityManager} from 'typeorm';
 import {Command} from '../command';
-import {Session} from '../../models/session';
+import {Session} from '../../models';
 import {MsgContext} from '../msg_context';
 
 export class StartCommand implements Command {

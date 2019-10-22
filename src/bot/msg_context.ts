@@ -1,5 +1,5 @@
 import {Channel} from 'discord.js';
-import {Session} from '../models/session';
+import {Session} from '../models';
 
 export interface MsgContext {
   channel: Channel;
