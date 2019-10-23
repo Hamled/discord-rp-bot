@@ -18,11 +18,11 @@ export class StartCommand implements Command {
       return context;
     }
 
-    const sess = new Session();
-    sess.channelId = context.channel.id;
-    await this.manager.save(sess);
+    const session = new Session();
+    session.channelId = context.channel.id;
+    await this.manager.save(session);
 
-    console.log(`Starting new session with id ${sess.id} on channel ${sess.channelId}`);
-    return {...context, session: sess};
+    console.log(`Starting new session with id ${session.id} on channel ${session.channelId}`);
+    return {...context, session};
   }
 }
