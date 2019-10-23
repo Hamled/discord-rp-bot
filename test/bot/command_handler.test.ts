@@ -1,7 +1,7 @@
-import {Channel, Client} from 'discord.js';
 import {Command} from '../../src/bot/command';
 import {CommandHandler} from '../../src/bot/command_handler';
 import {MsgContext} from '../../src/bot/msg_context';
+import {FakeMsgContext} from '../fakes';
 
 const MockCommandMatcher = jest.fn<jest.Mocked<Command>, [string]>((cmdName: string) => ({
   matches: jest.fn((name: string): boolean => name === cmdName),
@@ -23,12 +23,8 @@ const mockCmds: jest.Mocked<Command>[] = [
   new MockCommandMatcher('bar'),
 ];
 
-const fakeChannel = (): Channel => new Channel((null as unknown) as Client, {});
-
 describe('Command handler', () => {
-  const context: MsgContext = {
-    channel: fakeChannel()
-  };
+  const context: MsgContext = new FakeMsgContext();
 
   beforeEach(() => {
     mockCmds.forEach((mock: jest.Mocked<Command>) => {
@@ -132,7 +128,7 @@ describe('Command handler', () => {
 
     it('may return a new context if a command is processed', async () => {
       expect.assertions(2);
-      const ctx = { channel: fakeChannel() };
+      const ctx = new FakeMsgContext();
       // Sanity check
       expect(ctx).not.toBe(context);
 
