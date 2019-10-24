@@ -1,7 +1,6 @@
 import {EntityManager} from 'typeorm';
-import {Command} from '../command';
 import {Session} from '../../models';
-import {MsgContext} from '../../interfaces';
+import {MsgContext, Command} from '../../interfaces';
 
 export class StopCommand implements Command {
   constructor(private readonly manager: EntityManager) {
