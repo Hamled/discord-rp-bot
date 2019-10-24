@@ -17,6 +17,10 @@ export class FakeEntityManager extends EntityManager {
     return entity;
   }
 
+  _clearSavedEntities(): void {
+    this.savedEntities.splice(0);
+  }
+
   private saveInternal(entity: any): void {
     this.savedEntities.push(entity);
     entity.id = this.savedEntities.length;
