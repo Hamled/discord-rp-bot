@@ -1,4 +1,4 @@
-import {Message} from 'discord.js';
+import {Message} from '../interfaces';
 import {Entity, Column, PrimaryColumn, ManyToOne} from 'typeorm';
 import {Session} from './session';
 

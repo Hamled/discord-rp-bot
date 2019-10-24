@@ -1,5 +1,4 @@
-import {TextChannel} from 'discord.js';
-import {MsgContext} from '../../src/bot/msg_context';
+import {MsgContext, TextChannel} from '../../src/interfaces';
 import {Session} from '../../src/models/session';
 import {FakeTextChannel} from './text_channel';
 

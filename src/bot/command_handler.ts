@@ -1,5 +1,4 @@
-import {Command} from './command';
-import {MsgContext} from './msg_context';
+import {MsgContext, Command} from '../interfaces';
 
 export class CommandHandler {
   constructor(private readonly commands: Command[]) {
