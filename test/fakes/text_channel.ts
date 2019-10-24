@@ -1,10 +1,9 @@
-import {TextChannel} from 'discord.js';
-import {FakeGuild} from './guild';
+import {TextChannel} from '../../src/interfaces';
 
-export class FakeTextChannel extends TextChannel {
+export class FakeTextChannel implements TextChannel {
+  public readonly id: string;
+
   constructor(id?: string) {
-    super(new FakeGuild(), {
-      id: id || ''
-    });
+    this.id = id || 'channel-12345';
   }
 }

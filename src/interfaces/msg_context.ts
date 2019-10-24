@@ -1,4 +1,4 @@
-import {TextChannel} from 'discord.js';
+import {TextChannel} from '../interfaces';
 import {Session} from '../models';
 
 export interface MsgContext {
