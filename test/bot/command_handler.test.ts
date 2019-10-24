@@ -1,6 +1,6 @@
 import {Command} from '../../src/bot/command';
 import {CommandHandler} from '../../src/bot/command_handler';
-import {MsgContext} from '../../src/bot/msg_context';
+import {MsgContext} from '../../src/interfaces';
 import {FakeMsgContext} from '../fakes';
 
 const MockCommandMatcher = jest.fn<jest.Mocked<Command>, [string]>((cmdName: string) => ({
