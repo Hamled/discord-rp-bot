@@ -37,20 +37,18 @@ describe('start command', () => {
   });
 
   describe('process', () => {
-    it('should return a context with the new session', async () => {
+    it('should return a context with a session', async () => {
       expect.assertions(1);
       const newContext = await cmd.process(new FakeMsgContext());
 
-      const session = SessionMock.mock.instances[0];
-      expect(newContext.session).toBe(session);
+      expect(newContext.session).toBeDefined();
     });
 
-    it('should return a context with the session recorder', async () => {
+    it('should return a context with a session recorder', async () => {
       expect.assertions(1);
       const newContext = await cmd.process(new FakeMsgContext());
 
-      const recorder = SessionRecorderMock.mock.results[0].value;
-      expect(newContext.recorder).toBe(recorder);
+      expect(newContext.recorder).toBeDefined();
     });
 
     describe('when session does not exist', () => {
@@ -75,7 +73,7 @@ describe('start command', () => {
         expect(session.channelId).toEqual(channelId);
       });
 
-      it('should start a new session recorder', async () => {
+      it('should start recording the session', async () => {
         expect.assertions(2);
 
         const context = new FakeMsgContext();
@@ -102,17 +100,51 @@ describe('start command', () => {
         expect(newContext.session).toBe(fakeSession);
       });
 
-      it('should not create a session recorder if one already exists', async () => {
-        expect.assertions(2);
-        const mockRecorder = new SessionRecorder(fakeSession, new FakeTextChannel(), manager);
-        SessionRecorderMock.mockClear();
+      describe('and recorder already exists', () => {
+        it('should create a new recorder', async () => {
+          expect.assertions(1);
 
-        const context = new FakeMsgContext('12345', fakeSession, mockRecorder);
+          const context = new FakeMsgContext();
+          await cmd.process(context);
 
-        const newContext = await cmd.process(context);
+          const session = SessionMock.mock.instances[0];
+          expect(SessionRecorderMock).toHaveBeenCalledWith(session, context.channel, manager);
+        });
 
-        expect(SessionRecorderMock).not.toHaveBeenCalled();
-        expect(newContext.recorder).toBe(mockRecorder);
+        it('should start recording the session', async () => {
+          expect.assertions(1);
+          const mockRecorder = new SessionRecorder(fakeSession, new FakeTextChannel(), manager);
+          const context = new FakeMsgContext('12345', fakeSession, mockRecorder);
+
+          await cmd.process(context);
+
+          expect((mockRecorder as jest.Mocked<SessionRecorder>).start).toHaveBeenCalled();
+        });
+      });
+
+      describe('and recorder does not exist', () => {
+        it('should not create a recorder', async () => {
+          expect.assertions(2);
+          const mockRecorder = new SessionRecorder(fakeSession, new FakeTextChannel(), manager);
+          SessionRecorderMock.mockClear();
+
+          const context = new FakeMsgContext('12345', fakeSession, mockRecorder);
+
+          const newContext = await cmd.process(context);
+
+          expect(SessionRecorderMock).not.toHaveBeenCalled();
+          expect(newContext.recorder).toBe(mockRecorder);
+        });
+
+        it('should start recording the session', async () => {
+          expect.assertions(1);
+          const context = new FakeMsgContext('12345', fakeSession);
+
+          await cmd.process(context);
+
+          const recorder = SessionRecorderMock.mock.results[0].value;
+          expect(recorder.start).toHaveBeenCalled();
+        });
       });
     });
   })
