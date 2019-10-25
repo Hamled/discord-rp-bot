@@ -1,6 +1,7 @@
 import {EntityManager} from 'typeorm';
 import {Session} from '../../models';
 import {MsgContext, Command} from '../../interfaces';
+import {SessionRecorder} from '../session_recorder';
 
 export class StartCommand implements Command {
   constructor(private readonly manager: EntityManager) {
@@ -10,7 +11,7 @@ export class StartCommand implements Command {
     return name === 'start';
   }
 
-  async process(context: MsgContext, ...args: string[]): Promise<MsgContext> {
+  async process(context: MsgContext, ..._args: string[]): Promise<MsgContext> {
     if(context.session) {
       console.log(`Attempted to start a session on channel ${context.channel.id} ` + 
                   `when one was already active (id ${context.session.id})`);
@@ -21,7 +22,10 @@ export class StartCommand implements Command {
     session.channelId = context.channel.id;
     await this.manager.save(session);
 
+    const recorder = context.recorder || new SessionRecorder(session, context.channel, this.manager);
+    recorder.start();
+
     console.log(`Starting new session with id ${session.id} on channel ${session.channelId}`);
-    return {...context, session};
+    return {...context, session, recorder};
   }
 }

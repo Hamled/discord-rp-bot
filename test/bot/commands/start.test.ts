@@ -1,8 +1,13 @@
 import {Session} from '../../../src/models';
 import {StartCommand} from '../../../src/bot/commands/start';
-import {FakeEntityManager, FakeMsgContext} from '../../fakes';
+import {SessionRecorder} from '../../../src/bot/session_recorder';
+import {FakeEntityManager, FakeMsgContext, FakeTextChannel} from '../../fakes';
 
 jest.mock('../../../src/models/session.ts');
+const SessionMock = Session as jest.Mock<Session>;
+
+jest.mock('../../../src/bot/session_recorder.ts');
+const SessionRecorderMock = (SessionRecorder as unknown) as jest.Mock<SessionRecorder>;
 
 describe('start command', () => {
   let cmd: StartCommand;
@@ -15,7 +20,8 @@ describe('start command', () => {
     fakeSession = new Session();
     manager.save(fakeSession);
 
-    (Session as jest.Mock<Session>).mockClear();
+    SessionMock.mockClear();
+    SessionRecorderMock.mockClear();
   });
 
   describe('matches', () => {
@@ -48,16 +54,37 @@ describe('start command', () => {
 
       await cmd.process(new FakeMsgContext(channelId));
 
-      const session = (Session as jest.Mock<Session>).mock.instances[0];
+      const session = SessionMock.mock.instances[0];
       expect(session.channelId).toEqual(channelId);
+    });
+
+    it('should start a new session recorder', async () => {
+      expect.assertions(2);
+
+      const context = new FakeMsgContext();
+      await cmd.process(context);
+
+      const session = SessionMock.mock.instances[0];
+      expect(SessionRecorderMock).toHaveBeenCalledWith(session, context.channel, manager);
+
+      const recorder = SessionRecorderMock.mock.results[0].value;
+      expect(recorder.start).toHaveBeenCalled();
     });
 
     it('should return a context with the new session', async () => {
       expect.assertions(1);
       const newContext = await cmd.process(new FakeMsgContext());
 
-      const session = (Session as jest.Mock<Session>).mock.instances[0];
+      const session = SessionMock.mock.instances[0];
       expect(newContext.session).toBe(session);
+    });
+
+    it('should return a context with the session recorder', async () => {
+      expect.assertions(1);
+      const newContext = await cmd.process(new FakeMsgContext());
+
+      const recorder = SessionRecorderMock.mock.results[0].value;
+      expect(newContext.recorder).toBe(recorder);
     });
 
     it('should not create a new session if one already exists', async () => {
@@ -70,6 +97,19 @@ describe('start command', () => {
       expect(Session).toHaveBeenCalledTimes(0);
       expect(manager.savedEntities.length).toBe(numSavedEntities);
       expect(newContext.session).toBe(fakeSession);
+    });
+
+    it('should not create a session recorder if session already exists', async () => {
+      expect.assertions(2);
+      const mockRecorder = new SessionRecorder(fakeSession, new FakeTextChannel(), manager);
+      SessionRecorderMock.mockClear();
+
+      const context = new FakeMsgContext('12345', fakeSession, mockRecorder);
+
+      const newContext = await cmd.process(context);
+
+      expect(SessionRecorderMock).not.toHaveBeenCalled();
+      expect(newContext.recorder).toBe(mockRecorder);
     });
   })
 });
